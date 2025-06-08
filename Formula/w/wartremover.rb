@@ -1,8 +1,8 @@
 class Wartremover < Formula
   desc "Flexible Scala code linting tool"
   homepage "https://github.com/wartremover/wartremover"
-  url "https://github.com/wartremover/wartremover/archive/refs/tags/v3.3.3.tar.gz"
-  sha256 "c067f5b30f49c91a639622dc7f10fb8f5bf8e988a665a185f27ea143beb303d7"
+  url "https://github.com/wartremover/wartremover/archive/refs/tags/v3.3.5.tar.gz"
+  sha256 "773e4762a61c4ac8afe259ab8bab3178eea07693c5493994bc204c9f091d3f5e"
   license "Apache-2.0"
   head "https://github.com/wartremover/wartremover.git", branch: "master"
 
@@ -19,7 +19,9 @@ class Wartremover < Formula
   depends_on "openjdk"
 
   def install
-    system "sbt", "-sbt-jar", Formula["sbt"].opt_libexec/"bin/sbt-launch.jar", "core/assembly"
+    # fix `java.lang.OutOfMemoryError: Java heap space` issue during `assembly`
+    ENV["SBT_OPTS"] = "-Xmx4G -XX:+UseG1GC"
+    system "sbt", "assembly"
     libexec.install "wartremover-assembly.jar"
     bin.write_jar_script libexec/"wartremover-assembly.jar", "wartremover"
   end
